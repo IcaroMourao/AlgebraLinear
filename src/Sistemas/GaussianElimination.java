@@ -69,13 +69,7 @@ public class GaussianElimination {
             }
         }
     }
-
-    /**
-     * Returns a solution to the linear system of equations <em>Ax</em> = <em>b</em>.
-     *      
-     * @return a solution <em>x</em> to the linear system of equations
-     *         <em>Ax</em> = <em>b</em>; {@code null} if no such solution
-     */
+    
     public double[] primal() {
         // back substitution
         double[] x = new double[n];
