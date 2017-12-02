@@ -5,16 +5,17 @@ import AlgebraMatricial.OpwithMatrix;
 public class App {
 
 	public static void main(String[] args) {
+		@SuppressWarnings("unused")
 		OpwithMatrix op = new OpwithMatrix();
 		
+		@SuppressWarnings("unused")
 		double a[][] = { 
 				{ 1, 2, 3 },
 				{ 1, 2, 3 },
 				{ 1, 2, 3 }};
-	       
 	}
 
-	private static void printMatrix(double[][] matrix) {
+	public static void printMatrix(double[][] matrix) {
 		for (int i = 0; i < matrix[0].length; i++)
 			System.out.print("--");
 		System.out.println("");

@@ -1,70 +1,112 @@
 package Sistemas;
 
+import Main.App;
+
 public class FatoracaoLU {
+	
 
-		private int i, j, k, qtdLinhas, qtdColunas;
 
-		public double[] resolve(double a[][], double b[]) {
+	private double[][] LU; 
+	private int m, n, pivsign;
+	private int[] pivo;
 
-			qtdLinhas = a.length;
-			qtdColunas = a[0].length;
+	public FatoracaoLU(double[][] M) {
 
-			// A matriz a[][] é sobrescrita em uma que contém as matrizes diagonais
-			// inferioras e superioras.
-
-			for (j = 0; j < qtdColunas; ++j) {
-
-				// Elementos diagonais superiores.
-
-				for (i = 0; i <= j; ++i) {
-					for (k = 0; k < i; ++k) {
-						a[i][j] -= a[i][k] * a[k][j];
-					}
-				}
-
-				// Elementos diagonais inferiores.
-
-				for (i = j + 1; i < qtdLinhas; ++i) {
-					for (k = 0; k < j; ++k) {
-						a[i][j] -= a[i][k] * a[k][j];
-					}
-				}
-
-				// Determinar o elemento pivô para a coluna atual e reorganizar as
-				// linhas.
-				
-				Pivo pivo = new Pivo();
-				pivo.pivoParcial(a, b);
-
-				// Divide os elementos diagonais inferiores pelo valor diagonal.
-
-				for (i = j + 1; i < qtdLinhas; ++i) {
-					a[i][j] /= a[j][j];
-				}
-
-			} // fim do carregamento da matriz LU.
-
-			// Usa a substituição forward (para frente) and backward (para trás)
-			// para resolver as incógnitas.
-			// Primeiro a substituição forward.
-
-			for (i = 1; i < qtdLinhas; ++i) {
-				for (j = 0; j < i; ++j) {
-					b[i] -= a[i][j] * b[j];
-				}
-			}
-
-			// E agora a substituição backward
-
-			b[qtdLinhas - 1] = b[qtdLinhas - 1] / a[qtdLinhas - 1][qtdLinhas - 1];
-			for (i = qtdLinhas - 2; i >= 0; --i) {
-				for (j = i + 1; j < qtdColunas; ++j) {
-					b[i] -= a[i][j] * b[j];
-				}
-				b[i] /= a[i][i];
-			}
-
-			return b;
+		LU = M;
+		m = M.length;
+		n = M[0].length;
+		pivo = new int[m];
+		for (int i = 0; i < m; i++) {
+			pivo[i] = i;
 		}
+		pivsign = 1;
+		double[] linhaLU;
+		double[] colunaLU = new double[m];
 
+		for (int j = 0; j < n; j++) {
+
+			for (int i = 0; i < m; i++) {
+				colunaLU[i] = LU[i][j];
+			}
+
+			for (int i = 0; i < m; i++) {
+				linhaLU = LU[i];
+
+				int kmax = Math.min(i, j);
+				double s = 0.0;
+				for (int k = 0; k < kmax; k++) {
+					s += linhaLU[k] * colunaLU[k];
+				}
+
+				linhaLU[j] = colunaLU[i] -= s;
+			}
+
+			int p = j;
+			for (int i = j + 1; i < m; i++) {
+				if (Math.abs(colunaLU[i]) > Math.abs(colunaLU[p])) {
+					p = i;
+				}
+			}
+			if (p != j) {
+				for (int k = 0; k < n; k++) {
+					double t = LU[p][k];
+					LU[p][k] = LU[j][k];
+					LU[j][k] = t;
+				}
+				int k = pivo[p];
+				pivo[p] = pivo[j];
+				pivo[j] = k;
+				pivsign = -pivsign;
+			}
+
+			if (j < m & LU[j][j] != 0.0) {
+				for (int i = j + 1; i < m; i++) {
+					LU[i][j] /= LU[j][j];
+				}
+			}
+		}
+	} 
+	
+	public double[][] getL() {
+		double[][] L = new double[m][n];
+		for (int i = 0; i < m; i++) {
+			for (int j = 0; j < n; j++) {
+				if (i > j) {
+					L[i][j] = LU[i][j];
+				} else if (i == j) {
+					L[i][j] = 1.0;
+				} else {
+					L[i][j] = 0.0;
+				}
+			}
+		}
+		return L;
+	}
+
+	public double[][] getU() {
+		double[][] U = new double[m][n];
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (i <= j) {
+					U[i][j] = LU[i][j];
+				} else {
+					U[i][j] = 0.0;
+				}
+			}
+		}
+		return U;
+	}
+	
+	public static void main(String[] args) {
+		double a[][] = { 
+				{ 1, 2, 3 }, 
+				{ 4, 5, 6 }, 
+				{ 7, 8, 10 }}; 
+
+		FatoracaoLU lu = new FatoracaoLU(a);
+		App.printMatrix(lu.getL());
+		App.printMatrix(lu.getU());
+		
+	}
+	
 }
