@@ -31,4 +31,10 @@ public class App {
 			System.out.print("--");
 		System.out.println("");
 	}
+	
+	public static void printVector(double[] v) {
+		for(int i =0; i< v.length; i++)
+			System.out.println(v[i]+", ");
+	}
+	
 }
